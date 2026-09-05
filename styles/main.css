@@ -22,10 +22,10 @@ body .markdown-body .task-list-item.enabled label {
   justify-content: center;
 }
 
+/* The color follows the resolved scheme, see styles/divider. */
 .markdown-divider {
   width: 1px;
   height: 100%;
-  background: #e0e0e0;
 }
 
 .markdown-body {
@@ -65,10 +65,4 @@ body .markdown-body .task-list-item.enabled label {
 /* Clamped by mermaid's inline max-width, i.e. it ends up being the natural size */
 .markdown-body.zoomed-in .mermaid > svg[style*="max-width"] {
   width: 10000px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .markdown-divider {
-    background: #2a2a2a;
-  }
 }

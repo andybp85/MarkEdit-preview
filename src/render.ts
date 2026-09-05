@@ -10,6 +10,7 @@ import { createFrontMatterPlugin } from './features/frontMatter';
 import { coreCss, previewThemeCss, alertsCss, hljsCss, codeCopyCss } from './styling';
 import { localized } from './shared/strings';
 import { hasFullHost } from './support/host';
+import { currentColorScheme } from './support/colorScheme';
 import { syntaxAutoDetect, styledHtmlColorScheme, mathDelimiters, markdownItPreset, markdownItOptions } from './support/settings';
 
 /**
@@ -144,7 +145,7 @@ let mermaidRenderID = 0;
 
 async function loadMermaid() {
   const mermaid = await (mermaidAPI ??= importMermaid());
-  const isDarkMode = matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = currentColorScheme() === 'dark';
   if (isDarkMode !== mermaidDarkMode) {
     mermaid.initialize({ theme: isDarkMode ? 'dark' : undefined });
     mermaidDarkMode = isDarkMode;

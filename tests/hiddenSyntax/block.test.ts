@@ -151,13 +151,12 @@ describe('Mermaid blocks', () => {
   test('rerenders mounted diagrams when the color scheme changes', async () => {
     let darkMode = false;
     let listener: EventListener | undefined;
-    const removeEventListener = vi.fn();
     vi.spyOn(window, 'matchMedia').mockImplementation(() => ({
       get matches() { return darkMode; },
       addEventListener: (_type: string, callback: EventListenerOrEventListenerObject) => {
         listener = callback as EventListener;
       },
-      removeEventListener,
+      removeEventListener: () => { /* the widget releases its subscription, not the query */ },
     }) as unknown as MediaQueryList);
 
     const widget = new MermaidWidget('graph TD');
@@ -173,7 +172,13 @@ describe('Mermaid blocks', () => {
     expect(mermaidMocks.initialize).toHaveBeenLastCalledWith({ theme: 'dark' });
 
     widget.destroy(container);
-    expect(removeEventListener).toHaveBeenCalledOnce();
+    mermaidMocks.render.mockClear();
+
+    darkMode = false;
+    listener?.(new Event('change'));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    expect(mermaidMocks.render).not.toHaveBeenCalled();
   });
 
   test('allows editor mouse handling throughout the rendered widget', () => {

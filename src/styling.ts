@@ -30,6 +30,9 @@ import hljsDark from '../styles/hljs/dark.css?raw';
 
 import codeCopyBase from '../styles/code-copy/base.css?raw';
 
+import dividerLight from '../styles/divider/light.css?raw';
+import dividerDark from '../styles/divider/dark.css?raw';
+
 export type PreviewTheme = typeof previewThemeNames[number];
 
 export const previewThemeNames = [
@@ -116,6 +119,11 @@ export function hljsCss(colorScheme: ColorScheme = 'auto') {
 
 export function codeCopyCss() {
   return codeCopyBase;
+}
+
+/** Split-view divider, which is editor chrome rather than preview content. */
+export function dividerCss(colorScheme: ColorScheme = 'auto') {
+  return createCss(colorScheme, dividerLight, dividerDark).join('\n');
 }
 
 function createCss(colorScheme: ColorScheme, lightCss: string, darkCss: string): string[] {

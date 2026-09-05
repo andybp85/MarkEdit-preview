@@ -33,6 +33,8 @@ This extension applies the [github-markdown](https://github.com/sindresorhus/git
 
 The preview pane can be styled using the `markdown-body` CSS class.
 
+Light and dark follow the editor. The preview reads the background of the editing surface rather than `prefers-color-scheme`, so it tracks `Settings` > `Appearance` and also a user script that swaps the editor theme on its own. In Quick Look there is no editor to read, and the window appearance is used instead.
+
 ## Settings
 
 In [settings.json](https://github.com/MarkEdit-app/MarkEdit/wiki/Customization#advanced-settings), you can define a settings node named `extension.markeditPreview` to configure this extension, default settings are:

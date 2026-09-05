@@ -4,6 +4,7 @@ import { appendStyle, getBlockRange, getFileExtension, getFileName, joinPaths, s
 import { renderMarkdown, renderMermaid, renderKatex, handlePostRender, applyStyles } from './render';
 import { replaceImageURLs } from './features/image';
 import { hidePreviewButtons, viewModes } from './support/settings';
+import { appendSchemeStyle, onColorSchemeChange } from './support/colorScheme';
 import { localized } from './shared/strings';
 import { syncScrollProgress } from './scroll';
 import { resolveTaskToggle } from './features/task';
@@ -15,7 +16,7 @@ import Split from 'split-grid';
 import type { SplitInstance as Splitter } from 'split-grid';
 
 import mainCss from '../styles/main.css?raw';
-import { previewThemeCss, hljsCss, codeCopyCss } from './styling';
+import { previewThemeCss, hljsCss, codeCopyCss, dividerCss } from './styling';
 
 const containerView = document.body;
 const gutterView = document.createElement('div');
@@ -39,12 +40,16 @@ export enum ViewMode {
 
 export function setUp() {
   appendStyle(mainCss);
-  appendStyle(previewThemeCss());
   appendStyle(codeCopyCss());
+
+  // Scheme-dependent sheets are emitted as a light/dark pair and toggled, so
+  // the preview follows the editor theme rather than the window appearance.
+  appendSchemeStyle(previewThemeCss('light'), previewThemeCss('dark'));
+  appendSchemeStyle(dividerCss('light'), dividerCss('dark'));
 
   if (__FULL_BUILD__) {
     import('../styles/katex.css?raw').then(mod => appendStyle(mod.default));
-    appendStyle(hljsCss());
+    appendSchemeStyle(hljsCss('light'), hljsCss('dark'));
 
     // Hide the built-in preview buttons in side-by-side mode
     if (hidePreviewButtons) {
@@ -82,8 +87,7 @@ export function setUp() {
   const mutationObserver = new MutationObserver(updateGutterStyle);
   mutationObserver.observe(previewPane, { attributes: true, attributeFilter: ['style', 'class'] });
 
-  const darkModeObserver = matchMedia('(prefers-color-scheme: dark)');
-  darkModeObserver.addEventListener('change', () => {
+  onColorSchemeChange(() => {
     updateGutterStyle();
 
     // Re-render mermaid diagrams to apply the new theme

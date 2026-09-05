@@ -1,5 +1,6 @@
 import { WidgetType, type EditorView } from '@codemirror/view';
 import { renderMermaidSVG } from '../../render';
+import { onColorSchemeChange } from '../../support/colorScheme';
 
 export class MermaidWidget extends WidgetType {
   constructor(private readonly source: string) {
@@ -10,7 +11,6 @@ export class MermaidWidget extends WidgetType {
     const container = document.createElement('div');
     container.className = 'cm-md-syntaxHiddenMermaid';
 
-    const colorScheme = matchMedia('(prefers-color-scheme: dark)');
     let renderVersion = 0;
 
     const render = () => {
@@ -34,11 +34,12 @@ export class MermaidWidget extends WidgetType {
       });
     };
 
-    const handleColorSchemeChange = () => render();
-    colorScheme.addEventListener('change', handleColorSchemeChange);
+    // Mixed mode draws into the editor, so a diagram follows the editor theme
+    // rather than the window appearance.
+    const unsubscribe = onColorSchemeChange(render);
     disposables.set(container, () => {
       renderVersion += 1;
-      colorScheme.removeEventListener('change', handleColorSchemeChange);
+      unsubscribe();
     });
 
     render();

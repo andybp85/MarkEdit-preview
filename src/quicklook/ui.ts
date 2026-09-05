@@ -12,6 +12,7 @@ import {
 import { renderMarkdown, handlePostRender } from '../render';
 import { replaceImageURLs } from '../features/image';
 import { appendStyle } from '../shared/utils';
+import { onColorSchemeChange } from '../support/colorScheme';
 import quicklookCss from '../../styles/quicklook.css?raw';
 
 /**
@@ -50,7 +51,7 @@ export function setUpQuickLook(previewPane: HTMLElement) {
   setTimeout(renderer.ensureRendered, 0);
 
   // Re-render the preview on color-scheme change so Mermaid picks up the new theme
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  onColorSchemeChange(() => {
     if (previewPane.querySelector('.mermaid') === null) {
       return;
     }

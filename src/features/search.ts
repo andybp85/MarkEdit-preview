@@ -1,6 +1,7 @@
 import Mark from 'mark.js';
 import { currentViewMode, getPreviewPane, ViewMode } from '../view';
 import { themeName } from '../support/settings';
+import { currentColorScheme, onColorSchemeChange } from '../support/colorScheme';
 
 const MARK_MATCH_CLASS = 'markedit-preview-mark';
 const MARK_HIGHLIGHTED_CLASS = 'markedit-preview-mark-highlighted';
@@ -166,14 +167,16 @@ function updateStyles() {
   if (markStyleSheet === null) {
     markStyleSheet = document.createElement('style');
     document.head.appendChild(markStyleSheet);
+
+    // A search can outlive a theme swap, and updateStyles otherwise runs only
+    // when the search options change.
+    onColorSchemeChange(updateStyles);
   }
 
-  const { light, dark } = searchMatchColors[themeName] ?? searchMatchColors['github'];
+  const variants = searchMatchColors[themeName] ?? searchMatchColors['github'];
+  const match = variants[currentColorScheme()];
   markStyleSheet.textContent = [
-    `.${MARK_MATCH_CLASS} { background: ${light} !important; color: inherit !important; }`,
+    `.${MARK_MATCH_CLASS} { background: ${match} !important; color: inherit !important; }`,
     `.${MARK_HIGHLIGHTED_CLASS} { background: #ffff00 !important; color: #000000 !important; border-radius: 2px; box-shadow: 0px 0px 0px 2px #ffff00, 0px 0px 3px 2px rgba(0, 0, 0, 0.4); }`,
-    '@media (prefers-color-scheme: dark) {',
-    `  .${MARK_MATCH_CLASS} { background: ${dark} !important; }`,
-    '}',
   ].join('\n');
 }
